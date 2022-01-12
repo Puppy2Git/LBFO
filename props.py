@@ -5,8 +5,8 @@ from panda3d.core import CollisionSphere
 from panda3d.core import CollisionNode
 from panda3d.core import Point3
 class props_dicts:
-    #Model location, model animation locations, model radius
-    models = [["models/panda",{"walk":"models/panda-walk"},5]]
+    #Model location, model animation locations,collision offset, collision radius
+    models = [["models/panda",{"walk":"models/panda-walk"},6,6]]
 
 class propos(DirectObject):
     position = []
@@ -21,7 +21,7 @@ class propos(DirectObject):
         self.avatar.reparentTo(base.render) # Set avatar tied to game
         self.avatar.setPos(pos[0],pos[1],pos[2])#Setting the position of the Actor
         self.nodePath = self.avatar.attachNewNode(CollisionNode("cnode"))#New collision Node
-        self.collider = CollisionSphere(0,0,5, props_dicts.models[modelN][2]) # create colision sphere
+        self.collider = CollisionSphere(0,0,props_dicts.models[modelN][2], props_dicts.models[modelN][3]) # create colision sphere
         self.nodePath.node().addSolid(self.collider) # Adding collider to avatar
         self.nodePath.show()
 
