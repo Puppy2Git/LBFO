@@ -10,6 +10,7 @@ import cogs
 import obstacles
 from props import propos
 import toons
+from ohmyears import soundManager
 
 class AppGame(ShowBase):
     targetObj = None
@@ -30,6 +31,7 @@ class AppGame(ShowBase):
         #Note: may need to add back: ,self.drive.node()
         self.cTrav.addCollider(self.mainchar.nodePath, self.pusherh)#Adds Collider NotePath and Collision Handler to traverser
         self.pusherh.addCollider(self.mainchar.nodePath, self.mainchar.avatar)#Adds NodePath, Avatar, and base note of the collider
+        self.sound = soundManager(self)
         
         
         

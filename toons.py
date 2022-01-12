@@ -22,6 +22,7 @@ class controllerToon(toon):
     "up" : False,
     "down" : False,
     "interact" : False}
+    speed_cont = 15
     def __init__(self, base, pos):
         super().__init__(base, pos)
         
@@ -49,14 +50,17 @@ class controllerToon(toon):
     def update_move(self, task):
         deltax = 0
         deltay = 0
+        if globalClock != None:
+            dt = globalClock.getDt()
+
         if self.movement_dict["left"] and not self.movement_dict["right"]:
-            deltax = -1
+            deltax = -self.speed_cont
         elif self.movement_dict["right"] and not self.movement_dict["left"]:
-            deltax = 1
+            deltax = self.speed_cont
         if self.movement_dict["up"] and not self.movement_dict["down"]:
-            deltay = 1
+            deltay = self.speed_cont
         elif self.movement_dict["down"] and not self.movement_dict["up"]:
-            deltay = -1
-        newpos = self.getPos() + Point3(deltax,deltay,0)
+            deltay = -self.speed_cont
+        newpos = self.getPos() + Point3(deltax * dt,deltay * dt,0)
         self.setPos(newpos)
         return task.cont
