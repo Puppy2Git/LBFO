@@ -6,14 +6,9 @@ from panda3d.core import CollisionTraverser, CollisionHandlerPusher
 from panda3d.core import Point3
 from math import pi
 #Custom Imports
-import elevators
-import cogs
-import obstacles
-from props import propos
-import toons
-from ohmyears import soundManager
+
 from gameLogic import gameWorld
-debug = False
+debug = True
 class AppGame(ShowBase):
     targetObj = None
     def __init__(self):
@@ -26,7 +21,7 @@ class AppGame(ShowBase):
 
         #Camera will be weird otherwise without disabling mouse
         self.disable_mouse()
-        self.camera.setHpr(0,pi * 90,0)
+        self.camera.setHpr(0,280,0)
 
         #Note: may need to add back: ,self.drive.node()
         self.cTrav.addCollider(self.gameworld.mainchar.nodePath, self.pusherh)#Adds Collider NotePath and Collision Handler to traverser
