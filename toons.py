@@ -1,8 +1,8 @@
-from types import new_class
+from math import pi
+from direct.showbase.Messenger import Messenger
 from props import propos
 from panda3d.core import Point3
 import sys
-
 class toon(propos):
     '''
     This class in a subclass of the propos class\n
@@ -11,8 +11,10 @@ class toon(propos):
     This will not be called for normaly and is meant for\n
     subclasses
     '''
-    def __init__(self, base, pos):
-        super().__init__(base, 0, pos)
+    def __init__(self, base, pos, Hpr, scale):
+        super().__init__(base, 0, pos, Hpr, scale)
+    
+    
 
 
 
@@ -22,10 +24,11 @@ class controllerToon(toon):
     "up" : False,
     "down" : False,
     "interact" : False}
-    speed_cont = 15
-    def __init__(self, base, pos):
-        super().__init__(base, pos)
-        
+    ismoving = False
+    speed_cont = 25
+    def __init__(self, base, pos, Hpr, scale):
+        super().__init__(base, pos, Hpr,scale)
+        self.avatar.setPlayRate(2, "walk")
         #Creating keyboard events for the ShowBase for movement
         base.accept("escape",sys.exit)
         #Up
@@ -42,25 +45,64 @@ class controllerToon(toon):
         base.accept("arrow_right-up", self.setKey, ["right", False])
         
         base.accept("space", self.setKey, ["interact" , True])
+        
 
     def setKey(self, key, val):
         self.movement_dict[key] = val
         
     
-    def update_move(self, task):
+    def update_move(self):
         deltax = 0
         deltay = 0
-        if globalClock != None:
-            dt = globalClock.getDt()
+        rotation = 0
+        didrot = False
+        zcalc = True
+        dt = globalClock.getDt()
+        if self.movement_dict["interact"]:
+            self.movement_dict["interact"] = False
+            messenger.send("Interacting")
 
         if self.movement_dict["left"] and not self.movement_dict["right"]:
+            rotation = rotation - 90
             deltax = -self.speed_cont
+            zcalc = False
+            didrot = True
         elif self.movement_dict["right"] and not self.movement_dict["left"]:
+            rotation = rotation + 90
             deltax = self.speed_cont
+            zcalc = False
+            didrot = True
         if self.movement_dict["up"] and not self.movement_dict["down"]:
+            if (zcalc):
+                rotation = 180
+            else:
+                if (rotation <= 0):
+                    rotation = rotation - 45
+                else:
+                    rotation = rotation + 45
+            didrot = True
             deltay = self.speed_cont
         elif self.movement_dict["down"] and not self.movement_dict["up"]:
+            if (zcalc):
+                rotation = 0
+            else:
+                if (rotation >= 0):
+                    rotation = rotation - 45
+                else:
+                    rotation = rotation + 45
+            didrot = True
             deltay = -self.speed_cont
+        
+        if (didrot):
+            self.setHpr(Point3(rotation,0,0))
+        self.walk(((deltax != 0) or (deltay != 0)))
+        self.ismoving = ((deltax != 0) or (deltay != 0))
+
         newpos = self.getPos() + Point3(deltax * dt,deltay * dt,0)
         self.setPos(newpos)
-        return task.cont
+        
+    def walk(self, bol):
+        if (bol and (self.ismoving == False)):
+            self.avatar.loop("walk")
+        elif ((bol == False) and (self.ismoving == True)):
+            self.avatar.stop()
