@@ -4,7 +4,7 @@
   "bam2egg LB_bookshelfA.bam LB_bookshelf.egg"
 }
 <Texture> lawbotHQ_palette_3cmla_3 {
-  "/c/Users/alexa/Documents/GitHub/LBFO/textures/lawbotHQ_palette_3cmla_3.jpg"
+  "./textures/lawbotHQ_palette_3cmla_3.jpg"
   <Scalar> format { rgb }
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }
@@ -13,8 +13,8 @@
   <Scalar> envtype { modulate }
 }
 <Texture> lawbotHQ_palette_2tmla_1 {
-  "/c/Users/alexa/Documents/GitHub/LBFO/textures/lawbotHQ_palette_2tmla_1.jpg"
-  <Scalar> alpha-file { "/c/Users/alexa/Documents/GitHub/LBFO/textures/lawbotHQ_palette_2tmla_1_a.rgb" }
+  "./textures/lawbotHQ_palette_2tmla_1.jpg"
+  <Scalar> alpha-file { "./textures/lawbotHQ_palette_2tmla_1_a.rgb" }
   <Scalar> format { luminance_alpha }
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }
@@ -23,7 +23,7 @@
   <Scalar> envtype { modulate }
 }
 <Texture> LB_lawbookA {
-  "/c/Users/alexa/Documents/GitHub/LBFO/textures/LB_lawbookA.jpg"
+  "./textures/LB_lawbookA.jpg"
   <Scalar> format { rgb }
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }

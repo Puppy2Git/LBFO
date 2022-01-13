@@ -13,12 +13,12 @@ from props import propos
 import toons
 from ohmyears import soundManager
 from gameLogic import gameWorld
-
+debug = False
 class AppGame(ShowBase):
     targetObj = None
     def __init__(self):
         super().__init__(self)#Inits the ShowBase
-        self.gameworld = gameWorld(self)#Creates the gameworld
+        self.gameworld = gameWorld(self,debug)#Creates the gameworld
         self.gameworld.initWorld()#Initalizes the gameworld
         self.cTrav = CollisionTraverser()#Added the Collision Traverser
         self.pusherh = CollisionHandlerPusher()#Adds a Collision Hanlder for Pushing
