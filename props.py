@@ -42,10 +42,8 @@ class propos(DirectObject):
         self.base = base # To get Base
         if len(props_dicts.models[modelN][0]) >= 2:#If has animations and is an actor
             self.avatar = Actor(props_dicts.models[modelN][0][0],props_dicts.models[modelN][0][1]) #New Avatar
-            print("Made actor")
         else:
             self.avatar = self.base.loader.loadModel(props_dicts.models[modelN][0][0])#Otherwise if they are a prop
-            print("Made Prop")
         self.avatar.reparentTo(base.render) # Set avatar tied to game
         self.avatar.setPos(pos)#Setting the position of the Actor
         self.avatar.setHpr(hpr)
