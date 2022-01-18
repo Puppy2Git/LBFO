@@ -21,7 +21,7 @@ class AppGame(ShowBase):
 
         #Camera will be weird otherwise without disabling mouse
         self.disable_mouse()
-        self.camera.setHpr(0,280,0)
+        self.camera.setHpr(0,275,0)
 
         #Note: may need to add back: ,self.drive.node()
         self.cTrav.addCollider(self.gameworld.mainchar.nodePath, self.pusherh)#Adds Collider NotePath and Collision Handler to traverser
@@ -35,7 +35,7 @@ class AppGame(ShowBase):
         self.taskMgr.add(self.gameworld.sound.update_musicshift, "music_update")#So that the music can change
 
     def followObject(self, task):
-        lookpos = self.targetObj.getPos() + Point3(0,-30,175)
+        lookpos = self.targetObj.getPos() + Point3(0,-10,70)
         
         self.camera.setPos(lookpos)
         

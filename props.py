@@ -1,6 +1,7 @@
 
 from direct.actor.Actor import Actor
 from direct.showbase.DirectObject import DirectObject
+from direct.showbase.Loader import Loader
 import panda3d
 from math import pi
 from panda3d.core import CollisionSphere
@@ -10,10 +11,11 @@ from panda3d.core import BitMask32
 from panda3d.core import Point3
 class props_dicts:
     #Model location, model animation locations,collision offset, collision radius
-    models = [ [["models/panda",{"walk":"models/panda-walk"}] , CollisionSphere(0,0,6,6)] ,#Default Actor
-    [["models/panda"],CollisionCapsule(-1,0,1, 1,0,1, 1)],#Full Wall
-    [["models/LB_bookshelf"],"**/collision"],#Bookshelf
-    [["models/toon"], CollisionSphere(0,0,6,6)]#Toon Model
+    models = [ [ Actor("models/panda",{"walk":"models/panda-walk"}) , CollisionSphere(0,0,6,6)] ,#Default Actor
+    [Actor("models/panda",{"walk":"models/panda-walk"}),CollisionCapsule(-1,0,1, 1,0,1, 1)],#Full Wall
+    ["models/LB_bookshelf","**/collision"],#Bookshelf
+    [Actor("models/toon"), CollisionSphere(0,0,3,3)],
+    ["models/level"]#Toon Model
     ]
 
     directions = {
@@ -40,27 +42,25 @@ class propos(DirectObject):
     collider = None
     nodePath = None
 
-    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1),actor = True, animation = 1):
+    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1)):
         super().__init__()
         self.position = pos# Set position of class
         self.base = base # To get Base
-        if actor:#If has animations and is an actor
-            if (animation > 0):
-                self.avatar = Actor(props_dicts.models[modelN][0][0],props_dicts.models[modelN][0][1]) #New Avatar
-            else:
-                self.avatar = Actor(props_dicts.models[modelN][0][0])
-        else:
-            self.avatar = self.base.loader.loadModel(props_dicts.models[modelN][0][0])#Otherwise if they are a prop
-        self.avatar.reparentTo(base.render) # Set avatar tied to game
+        self.avatar = props_dicts.models[modelN][0]
         
-
-        if (type(props_dicts.models[modelN][1]) == type("string") ):#If there is collision geometry
-            self.collider = self.avatar.find(props_dicts.models[modelN][1])
-            self.collider.node().setIntoCollideMask(BitMask32.bit(0))
-        else:
+        if (isinstance(self.avatar,Actor)):#If there is collision geometry
+            self.avatar.reparentTo(base.render) # Set avatar tied to game
+            self.avatar = props_dicts.models[modelN][0]
             self.nodePath = self.avatar.attachNewNode(CollisionNode("cnode"))#New collision Node
             self.collider = props_dicts.models[modelN][1] # create colision sphere
             self.nodePath.node().addSolid(self.collider) # Adding collider to avatar
+            
+        else:
+            self.avatar = self.base.loader.loadModel(props_dicts.models[modelN][0])
+            self.avatar.reparentTo(base.render) # Set avatar tied to game
+            if (len(props_dicts.models[modelN]) == 2):
+                self.collider = self.avatar.find(props_dicts.models[modelN][1])
+                self.collider.node().setIntoCollideMask(BitMask32.bit(0))
         self.avatar.setPos(pos)#Setting the position of the Actor
         self.avatar.setHpr(hpr)
         self.avatar.setScale(scale)

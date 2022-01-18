@@ -11,8 +11,8 @@ class toon(propos):
     This will not be called for normaly and is meant for\n
     subclasses
     '''
-    def __init__(self, base, pos, Hpr, scale):
-        super().__init__(base, 0, pos, Hpr, scale)
+    def __init__(self, base, pos, Hpr):
+        super().__init__(base, 3, pos, Hpr, 1)
     
     
 
@@ -25,9 +25,9 @@ class controllerToon(toon):
     "down" : False,
     "interact" : False}
     ismoving = False
-    speed_cont = 25
-    def __init__(self, base, pos, Hpr, scale):
-        super().__init__(base, pos, Hpr,scale)
+    speed_cont = 20
+    def __init__(self, base, pos, Hpr):
+        super().__init__(base, pos, Hpr)
         self.avatar.setPlayRate(2, "walk")
         #Creating keyboard events for the ShowBase for movement
         base.accept("escape",sys.exit)
