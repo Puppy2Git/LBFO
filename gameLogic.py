@@ -3,7 +3,8 @@ import ohmyears
 from props import propos
 from ohmyears import soundManager
 from props import getdir
-import toons
+from toons import state
+from toons import controllerToon
 from panda3d.core import Point3
 from math import pi
 
@@ -21,10 +22,19 @@ class gameWorld(DirectObject):
 
     
     def initWorld(self):
+<<<<<<< Updated upstream
         self.mainchar = toons.controllerToon(self.base, Point3(20,20,0),getdir('S'))
         self.bookshelf1 = propos(self.base,2,Point3(-20,10,0),getdir('S'),1)
         self.bookshelf2 = propos(self.base,2,Point3(10,10,0),getdir('S'),1)
         self.level = propos(self.base,4,Point3(0,0,0))
+=======
+        self.mainchar = controllerToon(self.base, Point3(20,20,0),getdir('S'),1,actor = True, animation = 0)
+        movementstate = state(self.mainchar.canMove(True),self.mainchar.canMove(False))
+        movementstate.start()
+        self.bookshelf1 = propos(self.base,2,Point3(-20,10,0),getdir('S'),2)
+        self.bookshelf2 = propos(self.base,2,Point3(10,10,0),getdir('S'),2)
+        
+>>>>>>> Stashed changes
         
         
 
@@ -32,7 +42,10 @@ class gameWorld(DirectObject):
             self.mainchar.debug_showcolision()
             self.bookshelf1.debug_showcolision()
             self.bookshelf2.debug_showcolision()
+<<<<<<< Updated upstream
             
+=======
+>>>>>>> Stashed changes
 
     def interacting(self):
         self.tugging = not self.tugging

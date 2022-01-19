@@ -16,7 +16,22 @@ class toon(propos):
     
     
 
+class state():
+    startaction = None # the command to start with
+    endaction = None # The command to end with
+    durration = -1 #The durration it should end with
+    def __init__(self, start, end, durration):
+        self.startaction = start
+        self.endaction = end
+        self.durration = durration
+    
+    def start(self, prevstate = None):
+        if prevstate is not None:
+            prevstate.end()
+        self.startaction()
 
+    def end(self):
+        self.endaction()
 
 class controllerToon(toon):
     movement_dict = {"left": False, 
@@ -25,9 +40,16 @@ class controllerToon(toon):
     "down" : False,
     "interact" : False}
     ismoving = False
+<<<<<<< Updated upstream
     speed_cont = 20
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
+=======
+    movestate = False
+    speed_cont = 25
+    def __init__(self, base, pos, Hpr, scale):
+        super().__init__(base, pos, Hpr,scale)
+>>>>>>> Stashed changes
         self.avatar.setPlayRate(2, "walk")
         #Creating keyboard events for the ShowBase for movement
         base.accept("escape",sys.exit)
@@ -50,7 +72,9 @@ class controllerToon(toon):
     def setKey(self, key, val):
         self.movement_dict[key] = val
         
-    
+    def canMove(self, move):
+        self.movestate = move
+
     def update_move(self):
         deltax = 0
         deltay = 0
@@ -61,38 +85,38 @@ class controllerToon(toon):
         if self.movement_dict["interact"]:
             self.movement_dict["interact"] = False
             messenger.send("Interacting")
-
-        if self.movement_dict["left"] and not self.movement_dict["right"]:
-            rotation = rotation - 90
-            deltax = -self.speed_cont
-            zcalc = False
-            didrot = True
-        elif self.movement_dict["right"] and not self.movement_dict["left"]:
-            rotation = rotation + 90
-            deltax = self.speed_cont
-            zcalc = False
-            didrot = True
-        if self.movement_dict["up"] and not self.movement_dict["down"]:
-            if (zcalc):
-                rotation = 180
-            else:
-                if (rotation <= 0):
-                    rotation = rotation - 45
+        if self.movestate:
+            if self.movement_dict["left"] and not self.movement_dict["right"]:
+                rotation = rotation - 90
+                deltax = -self.speed_cont
+                zcalc = False
+                didrot = True
+            elif self.movement_dict["right"] and not self.movement_dict["left"]:
+                rotation = rotation + 90
+                deltax = self.speed_cont
+                zcalc = False
+                didrot = True
+            if self.movement_dict["up"] and not self.movement_dict["down"]:
+                if (zcalc):
+                    rotation = 180
                 else:
-                    rotation = rotation + 45
-            didrot = True
-            deltay = self.speed_cont
-        elif self.movement_dict["down"] and not self.movement_dict["up"]:
-            if (zcalc):
-                rotation = 0
-            else:
-                if (rotation >= 0):
-                    rotation = rotation - 45
+                    if (rotation <= 0):
+                        rotation = rotation - 45
+                    else:
+                        rotation = rotation + 45
+                didrot = True
+                deltay = self.speed_cont
+            elif self.movement_dict["down"] and not self.movement_dict["up"]:
+                if (zcalc):
+                    rotation = 0
                 else:
-                    rotation = rotation + 45
-            didrot = True
-            deltay = -self.speed_cont
-        
+                    if (rotation >= 0):
+                        rotation = rotation - 45
+                    else:
+                        rotation = rotation + 45
+                didrot = True
+                deltay = -self.speed_cont
+            
         if (didrot):
             self.setHpr(Point3(rotation,0,0))
         self.walk(((deltax != 0) or (deltay != 0)))
