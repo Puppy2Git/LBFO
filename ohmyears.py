@@ -14,11 +14,11 @@ class soundManager():
         self.Music_Tugging = self.base.loader.loadMusic("Sounds/Tugging.wav")
         self.Music_Idle.setLoop()
         self.Music_Tugging.setLoop()
-        self.Music_Idle.play()
-        self.Music_Tugging.play()
         self.Music_Idle.setVolume(self.vol1)
         self.Music_Tugging.setVolume(self.vol2)
-    
+        self.Music_Idle.play()
+        self.Music_Tugging.play()
+
     def update_musicshift(self, task):
         #modifier
         if self.MusicState:

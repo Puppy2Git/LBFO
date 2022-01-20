@@ -11,7 +11,7 @@ from panda3d.core import BitMask32
 from panda3d.core import Point3
 class props_dicts:
     #Model location, model animation locations,collision offset, collision radius
-    models = [ [ Actor("models/panda",{"walk":"models/panda-walk"}) , CollisionSphere(0,0,6,6)] ,#Default Actor
+    models = [ [ Actor("models/panda",{"walk":"models/panda-walk"}) , CollisionSphere(0,0,3,3)] ,#Default Actor
     [Actor("models/panda",{"walk":"models/panda-walk"}),CollisionCapsule(-1,0,1, 1,0,1, 1)],#Full Wall
     ["models/LB_bookshelf","**/collision"],#Bookshelf
     [Actor("models/toon"), CollisionSphere(0,0,3,3)],
@@ -47,6 +47,7 @@ class propos(DirectObject):
         self.position = pos# Set position of class
         self.base = base # To get Base
         self.avatar = props_dicts.models[modelN][0]
+        
         
         if (isinstance(self.avatar,Actor)):#If there is collision geometry
             self.avatar.reparentTo(base.render) # Set avatar tied to game

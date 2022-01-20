@@ -4,7 +4,11 @@ from direct.task import Task
 from direct.actor.Actor import Actor
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher
 from panda3d.core import Point3
+from panda3d.core import NodePath
 from math import pi
+from panda3d.core import loadPrcFileData
+loadPrcFileData("", "want-directtools #t")
+loadPrcFileData("", "want-tk #t")
 #Custom Imports
 
 from gameLogic import gameWorld
@@ -43,4 +47,5 @@ class AppGame(ShowBase):
 
 
 game = AppGame()
+
 game.run()

@@ -1,4 +1,5 @@
-from math import pi
+from math import pi, sin, cos
+from turtle import speed
 from direct.showbase.Messenger import Messenger
 from props import propos
 from panda3d.core import Point3
@@ -20,14 +21,13 @@ class state():
     startaction = None # the command to start with
     endaction = None # The command to end with
     durration = -1 #The durration it should end with
-    def __init__(self, start, end, durration):
+    def __init__(self, start, end):
         self.startaction = start
         self.endaction = end
-        self.durration = durration
     
     def start(self, prevstate = None):
         if prevstate is not None:
-            prevstate.end()
+            prevstate.endaction()
         self.startaction()
 
     def end(self):
@@ -40,16 +40,16 @@ class controllerToon(toon):
     "down" : False,
     "interact" : False}
     ismoving = False
-<<<<<<< Updated upstream
+    movestate = 0
+    istugging = False
     speed_cont = 20
+    tug_offsetX = pi/2
+    tug_offsetY = 0
+    tug_orgin = Point3(0,0,0)
+    tug_prev = 0
+    speed_tug = 5
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
-=======
-    movestate = False
-    speed_cont = 25
-    def __init__(self, base, pos, Hpr, scale):
-        super().__init__(base, pos, Hpr,scale)
->>>>>>> Stashed changes
         self.avatar.setPlayRate(2, "walk")
         #Creating keyboard events for the ShowBase for movement
         base.accept("escape",sys.exit)
@@ -74,6 +74,17 @@ class controllerToon(toon):
         
     def canMove(self, move):
         self.movestate = move
+    
+    def canTug(self, tug):
+        if (tug == 2):
+            self.tug_orgin = self.getPos()
+        else:
+            self.tug_offsetX = pi/2
+            self.tug_offsetY = 0
+        self.movestate = tug
+        
+    def update_tug(self):
+        print(self.getHpr())
 
     def update_move(self):
         deltax = 0
@@ -82,10 +93,11 @@ class controllerToon(toon):
         didrot = False
         zcalc = True
         dt = globalClock.getDt()
+        #print(self.movestate)
         if self.movement_dict["interact"]:
             self.movement_dict["interact"] = False
             messenger.send("Interacting")
-        if self.movestate:
+        if self.movestate == 1:#Handles movement around the level
             if self.movement_dict["left"] and not self.movement_dict["right"]:
                 rotation = rotation - 90
                 deltax = -self.speed_cont
@@ -116,14 +128,41 @@ class controllerToon(toon):
                         rotation = rotation + 45
                 didrot = True
                 deltay = -self.speed_cont
-            
-        if (didrot):
-            self.setHpr(Point3(rotation,0,0))
-        self.walk(((deltax != 0) or (deltay != 0)))
-        self.ismoving = ((deltax != 0) or (deltay != 0))
+            if (didrot):
+                self.setHpr(Point3(rotation,0,0))
+            self.walk(((deltax != 0) or (deltay != 0)))
+            self.ismoving = ((deltax != 0) or (deltay != 0))
 
-        newpos = self.getPos() + Point3(deltax * dt,deltay * dt,0)
-        self.setPos(newpos)
+            newpos = self.getPos() + Point3(deltax * dt,deltay * dt,0)
+            self.setPos(newpos)        
+
+        elif self.movestate == 2:#Handles tugging stuff
+            #Funcitons of movement
+            #Degree of Left and Right X = cos(f)
+            #Degree of Tugging Back Y = -(sin(f) + t) + 1
+            #f = tugging ammount left (-) and right (+), 0 <= x <= pi
+            #t = elaped time 
+            #Then for tugging location just use Actor1.lookAt(Actor2)
+            if self.movement_dict["left"]:
+                if (self.tug_offsetX > 0):
+                    self.tug_offsetX = self.tug_offsetX - 0.1  * 25 * dt
+                if (self.tug_prev != -0.1):
+                    self.tug_offsetY = self.tug_offsetY + 1  * 5 * dt
+                    self.tug_prev = -0.1
+            elif self.movement_dict["right"]:
+                if (self.tug_offsetX < pi):
+                    self.tug_offsetX = self.tug_offsetX + 0.1  * 25 * dt
+                if (self.tug_prev != 0.1):
+                    self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
+                    self.tug_prev = 0.1
+            newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)+self.tug_offsetY) + 1,0)
+            self.setPos(newpos)
+            
+
+
+
+
+        
         
     def walk(self, bol):
         if (bol and (self.ismoving == False)):
