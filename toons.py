@@ -80,39 +80,63 @@ class controllerToon(toon):
         
 
     def setKey(self, key, val):
+        '''
+        Called by keyboard event\n
+        Used to set the key state given the key\n
+        Called only by base.accept()\n
+        >>> base.accept("key", self.setKey, ["right", True])\n
+        Sets the right movement to truea
+        '''
         self.movement_dict[key] = val
         
     def canMove(self, move):
+        '''
+        Sets the movement state of the controller\n
+        0 = no movement\n
+        1 = Normal Movement\n
+        2 = Tugging Movement\n
+        Called by outside souces\n
+        >>> my_toon.canMove(0)\n
+        The toon cannot move now
+        '''
         self.movestate = move
     
     def canTug(self, tug, looking):
+        '''
+        Sets the state of if it can Tug\n
+        Takes in the tug state and the target stack\n
+        >>> my_toon.canTug(2, stack)\n
+        It will begin to tug with a target stack
+        '''
         self.stack_to_look_at = looking
         if (tug == 2):
-            self.tug_orgin = self.stack_to_look_at.getParent().getPos() + Point3(0,-7,0)
+            self.tug_orgin = self.stack_to_look_at.getParent().getPos() + Point3(0,-6,0)
         else:
             self.tug_offsetX = pi/2
             self.tug_offsetY = 0
         self.movestate = tug
         
-    def update_tug(self):
-        print(self.getHpr())
 
     def update_move(self):
+        '''
+        Major Movement Function\n
+        Only Should be called in main update loop\n
+        '''
         deltax = 0
         deltay = 0
         dt = globalClock.getDt()
-        #print(self.movestate)
-        if self.movement_dict["interact"]:
+        
+        if self.movement_dict["interact"]:#Interact
             self.movement_dict["interact"] = False
             messenger.send("Interacting")
         if self.movestate == 1:#Handles movement around the level
-            if self.movement_dict["left"] and not self.movement_dict["right"]:
+            if self.movement_dict["left"] and not self.movement_dict["right"]:#Left
                 deltax = -self.speed_cont
-            elif self.movement_dict["right"] and not self.movement_dict["left"]:
+            elif self.movement_dict["right"] and not self.movement_dict["left"]:#Right
                 deltax = self.speed_cont
-            if self.movement_dict["up"] and not self.movement_dict["down"]:
+            if self.movement_dict["up"] and not self.movement_dict["down"]:#Up
                 deltay = self.speed_cont
-            elif self.movement_dict["down"] and not self.movement_dict["up"]:
+            elif self.movement_dict["down"] and not self.movement_dict["up"]:#Down
                 deltay = -self.speed_cont
             self.walk(((deltax != 0) or (deltay != 0)))
             self.ismoving = ((deltax != 0) or (deltay != 0))
@@ -128,20 +152,23 @@ class controllerToon(toon):
             #f = tugging ammount left (-) and right (+), 0 <= x <= pi
             #t = elaped time 
             #Then for tugging location just use Actor1.lookAt(Actor2)
-            if self.movement_dict["left"]:
+            if self.movement_dict["left"]:#Left
                 if (self.tug_offsetX > 0):
                     self.tug_offsetX = self.tug_offsetX - 0.1  * 25 * dt
                 if (self.tug_prev != -0.1):
                     self.tug_offsetY = self.tug_offsetY + 1  * 5 * dt
                     self.tug_prev = -0.1
-            elif self.movement_dict["right"]:
+            elif self.movement_dict["right"]:#Right
                 if (self.tug_offsetX < pi):
                     self.tug_offsetX = self.tug_offsetX + 0.1  * 25 * dt
                 if (self.tug_prev != 0.1):
                     self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
                     self.tug_prev = 0.1
-            newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)*self.tug_offsetY) + 1,0)
+            #New Pos
+            newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)*self.tug_offsetY),0)
+            #move
             self.setPos(newpos)
+            #New stack
             self.avatar.lookAt(self.stack_to_look_at)
             
 

@@ -26,12 +26,23 @@ class gameWorld(DirectObject):
         self.debug = debug
 
     def stackColide(self, state, entry):
-        print(entry.getIntoNodePath())
+        '''
+        This is called when a collision event happens with a stack and the tape collision handler\n
+        Sets the stack it collided with and if it is still coliding\n
+        only should be called by the accept statement\n
+        >>> self.accept('TapeCollider-into-StackColider', self.stackColide, [True])\n
+        Starts collision and sets it target stack
+        '''
         self.focus_stack = entry.getIntoNodePath()
         self.stackColiding = state
 
     
     def initWorld(self):
+        '''
+        Used to initalize the gameworld\n
+        Only should be called once in the main loop\n
+        >>> my_game.initWorld()
+        '''
         #Character
         self.mainchar = controllerToon(self.base, Point3(0,0,0),getdir('S'))
         self.movementstate = state(lambda : self.mainchar.canMove(move = 1),lambda : self.mainchar.canMove(move = 0))
@@ -43,8 +54,6 @@ class gameWorld(DirectObject):
         #Stacks
         self.stack = stack(base = self.base, pos = Point3(0,30,0))
         
-        
-
         if (self.debug):
             self.mainchar.debug_showcolision()
             self.bookshelf1.debug_showcolision()
@@ -53,6 +62,11 @@ class gameWorld(DirectObject):
             
 
     def interacting(self):
+        '''
+        Should be called from the Interacting event\n
+        This handles the logic behind starting to tug\n
+        >>> self.accept('Interacting',self.interacting)
+        '''
         self.tugging = not self.tugging
         if (self.tugging and self.stackColiding):
             self.movementstate.end()
@@ -66,5 +80,9 @@ class gameWorld(DirectObject):
             
 
     def toon_updateloop(self, task):
+        '''
+        This is the main toon update loop\n
+        This handles updating the movement of the toon\n
+        '''
         self.mainchar.update_move()#Updates player movement
         return task.cont

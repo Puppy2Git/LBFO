@@ -20,6 +20,10 @@ class soundManager():
         self.Music_Tugging.play()
 
     def update_musicshift(self, task):
+        '''
+        Handles the smooth transition between the Idle and Tugging wav files\n
+        This should be called in the main update function
+        '''
         #modifier
         if self.MusicState:
             mod = globalClock.getDt()
@@ -46,4 +50,10 @@ class soundManager():
         
 
     def ToggleMusic(self, state):
+        '''
+        Switches the priority of the music given the state\n
+        Should be called when tugging variable in gameWorld is changed\n
+        >>> my_sound.ToggleMusic(False)\n
+        Go back to Idle music
+        '''
         self.MusicState = state
