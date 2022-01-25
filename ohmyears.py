@@ -24,6 +24,7 @@ class soundManager():
         Handles the smooth transition between the Idle and Tugging wav files\n
         This should be called in the main update function
         '''
+        
         #modifier
         if self.MusicState:
             mod = globalClock.getDt()
@@ -45,10 +46,6 @@ class soundManager():
         self.Music_Tugging.setVolume(self.vol2)
         return task.cont
         
-        
-        
-        
-
     def ToggleMusic(self, state):
         '''
         Switches the priority of the music given the state\n

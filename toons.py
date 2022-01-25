@@ -1,9 +1,9 @@
 from math import pi, sin, cos
 from turtle import speed
 from direct.showbase.Messenger import Messenger
-from panda3d.core import CollisionCapsule, CollisionNode, BitMask32
+from panda3d.core import CollisionCapsule, CollisionNode, BitMask32, Point3
 from props import propos
-from panda3d.core import Point3
+
 import sys
 class toon(propos):
     '''
@@ -171,13 +171,13 @@ class controllerToon(toon):
             #New stack
             self.avatar.lookAt(self.stack_to_look_at)
             
-
-
-
-
-        
-        
     def walk(self, bol):
+        '''
+        Handles movement of animaiton\n
+        called within the movement thing\n
+        >>> self.walk(True)\n
+        Loops the walking animation
+        '''
         if (bol and (self.ismoving == False)):
             self.avatar.loop("walk")
         elif ((bol == False) and (self.ismoving == True)):

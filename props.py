@@ -4,11 +4,8 @@ from direct.showbase.DirectObject import DirectObject
 from direct.showbase.Loader import Loader
 import panda3d
 from math import pi
-from panda3d.core import CollisionSphere
-from panda3d.core import CollisionNode
-from panda3d.core import CollisionCapsule
-from panda3d.core import BitMask32
-from panda3d.core import Point3
+from panda3d.core import CollisionSphere, CollisionNode, CollisionCapsule, BitMask32, Point3
+
 class props_dicts:
     #Model location, model animation locations,collision offset, collision radius
     models = [ [ Actor("models/panda",{"walk":"models/panda-walk"}) , CollisionSphere(0,0,3,3)] ,#Default Actor

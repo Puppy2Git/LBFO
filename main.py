@@ -4,7 +4,7 @@ from direct.task import Task
 from direct.actor.Actor import Actor
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher, CollisionHandlerEvent
 from panda3d.core import Point3
-from panda3d.core import NodePath
+
 
 #Debug stuff
 #from panda3d.core import loadPrcFileData
