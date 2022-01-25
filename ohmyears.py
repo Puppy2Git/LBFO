@@ -45,5 +45,5 @@ class soundManager():
         
         
 
-    def ToggleMusic(self):
-        self.MusicState = not self.MusicState
+    def ToggleMusic(self, state):
+        self.MusicState = state

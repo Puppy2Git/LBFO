@@ -14,23 +14,28 @@ from math import pi
 class gameWorld(DirectObject):
     tugging = False
     debug = False
+    stackColiding = False
+    focus_stack = None
     def __init__(self, base, debug):
         self.base = base
         super().__init__()
         self.sound = soundManager(self.base)
-        self.accept('TapeCollider', self.dothing)
+        self.accept('TapeCollider-into-StackColider', self.stackColide, [True])
+        self.accept('TapeCollider-exit-StackColider', self.stackColide, [False])
         self.accept('Interacting',self.interacting)
         self.debug = debug
 
-    def dothing(self, entry):
-        print(entry)
+    def stackColide(self, state, entry):
+        print(entry.getIntoNodePath())
+        self.focus_stack = entry.getIntoNodePath()
+        self.stackColiding = state
 
     
     def initWorld(self):
         #Character
         self.mainchar = controllerToon(self.base, Point3(0,0,0),getdir('S'))
         self.movementstate = state(lambda : self.mainchar.canMove(move = 1),lambda : self.mainchar.canMove(move = 0))
-        self.tuggingstate = state(lambda : self.mainchar.canTug(tug = 2), lambda : self.mainchar.canTug(tug = 0))
+        self.tuggingstate = state(lambda : self.mainchar.canTug(tug = 2, looking = self.focus_stack), lambda : self.mainchar.canTug(tug = 0, looking = self.focus_stack))
         self.movementstate.start()
         #Props
         self.bookshelf1 = propos(self.base,2,Point3(-20,10,0),getdir('S'),2)
@@ -48,16 +53,17 @@ class gameWorld(DirectObject):
             
 
     def interacting(self):
-        
         self.tugging = not self.tugging
-        if (self.tugging):
+        if (self.tugging and self.stackColiding):
             self.movementstate.end()
             self.tuggingstate.start()
+            self.sound.ToggleMusic(True)
         else:
+            self.tugging = False
             self.tuggingstate.end()
             self.movementstate.start()
+            self.sound.ToggleMusic(False)
             
-        self.sound.ToggleMusic()
 
     def toon_updateloop(self, task):
         self.mainchar.update_move()#Updates player movement

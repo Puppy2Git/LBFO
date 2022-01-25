@@ -41,6 +41,7 @@ class controllerToon(toon):
     "down" : False,
     "interact" : False}
     ismoving = False
+    stack_to_look_at = None
     movestate = 0
     istugging = False
     speed_cont = 20
@@ -51,7 +52,7 @@ class controllerToon(toon):
     speed_tug = 5
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
-        self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,-10,3,0.5)
+        self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,10,3,0.5)
         self.linenode = self.avatar.attachNewNode(CollisionNode("TapeCollider"))
         #self.linenode.node().set_into_collide_mask(1)
         self.linenode.node().setFromCollideMask(BitMask32.bit(0))
@@ -84,9 +85,10 @@ class controllerToon(toon):
     def canMove(self, move):
         self.movestate = move
     
-    def canTug(self, tug):
+    def canTug(self, tug, looking):
+        self.stack_to_look_at = looking
         if (tug == 2):
-            self.tug_orgin = self.getPos()
+            self.tug_orgin = self.stack_to_look_at.getParent().getPos() + Point3(0,-7,0)
         else:
             self.tug_offsetX = pi/2
             self.tug_offsetY = 0
@@ -98,9 +100,6 @@ class controllerToon(toon):
     def update_move(self):
         deltax = 0
         deltay = 0
-        rotation = 0
-        didrot = False
-        zcalc = True
         dt = globalClock.getDt()
         #print(self.movestate)
         if self.movement_dict["interact"]:
@@ -108,41 +107,18 @@ class controllerToon(toon):
             messenger.send("Interacting")
         if self.movestate == 1:#Handles movement around the level
             if self.movement_dict["left"] and not self.movement_dict["right"]:
-                rotation = rotation - 90
                 deltax = -self.speed_cont
-                zcalc = False
-                didrot = True
             elif self.movement_dict["right"] and not self.movement_dict["left"]:
-                rotation = rotation + 90
                 deltax = self.speed_cont
-                zcalc = False
-                didrot = True
             if self.movement_dict["up"] and not self.movement_dict["down"]:
-                if (zcalc):
-                    rotation = 180
-                else:
-                    if (rotation <= 0):
-                        rotation = rotation - 45
-                    else:
-                        rotation = rotation + 45
-                didrot = True
                 deltay = self.speed_cont
             elif self.movement_dict["down"] and not self.movement_dict["up"]:
-                if (zcalc):
-                    rotation = 0
-                else:
-                    if (rotation >= 0):
-                        rotation = rotation - 45
-                    else:
-                        rotation = rotation + 45
-                didrot = True
                 deltay = -self.speed_cont
-            if (didrot):
-                self.setHpr(Point3(rotation,0,0))
             self.walk(((deltax != 0) or (deltay != 0)))
             self.ismoving = ((deltax != 0) or (deltay != 0))
-
             newpos = self.getPos() + Point3(deltax * dt,deltay * dt,0)
+            if (self.ismoving):
+                self.avatar.lookAt(newpos)
             self.setPos(newpos)        
 
         elif self.movestate == 2:#Handles tugging stuff
@@ -166,6 +142,7 @@ class controllerToon(toon):
                     self.tug_prev = 0.1
             newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)*self.tug_offsetY) + 1,0)
             self.setPos(newpos)
+            self.avatar.lookAt(self.stack_to_look_at)
             
 
 

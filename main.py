@@ -6,9 +6,9 @@ from panda3d.core import CollisionTraverser, CollisionHandlerPusher, CollisionHa
 from panda3d.core import Point3
 from panda3d.core import NodePath
 from math import pi
-from panda3d.core import loadPrcFileData
-loadPrcFileData("", "want-directtools #t")
-loadPrcFileData("", "want-tk #t")
+#from panda3d.core import loadPrcFileData
+#loadPrcFileData("", "want-directtools #t")
+#loadPrcFileData("", "want-tk #t")
 #Custom Imports
 
 from gameLogic import gameWorld
@@ -22,7 +22,8 @@ class AppGame(ShowBase):
         self.cTrav = CollisionTraverser()#Added the Collision Traverser
         self.pusherh = CollisionHandlerPusher()#Adds a Collision Hanlder for Pushing
         self.eventh = CollisionHandlerEvent()
-        self.eventh.addInPattern('%fn')
+        self.eventh.addInPattern('%fn-into-%in')
+        self.eventh.addOutPattern('%fn-exit-%in')
         self.pusherh.setHorizontal(True)
 
         #Camera will be weird otherwise without disabling mouse
