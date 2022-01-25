@@ -18,9 +18,12 @@ class gameWorld(DirectObject):
         self.base = base
         super().__init__()
         self.sound = soundManager(self.base)
+        self.accept('TapeCollider', self.dothing)
         self.accept('Interacting',self.interacting)
         self.debug = debug
 
+    def dothing(self, entry):
+        print(entry)
 
     
     def initWorld(self):
@@ -33,7 +36,7 @@ class gameWorld(DirectObject):
         self.bookshelf1 = propos(self.base,2,Point3(-20,10,0),getdir('S'),2)
         self.bookshelf2 = propos(self.base,2,Point3(10,10,0),getdir('S'),2)
         #Stacks
-        self.stack = stack(self.base, Point3(0,30,0))
+        self.stack = stack(base = self.base, pos = Point3(0,30,0))
         
         
 

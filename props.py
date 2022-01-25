@@ -42,7 +42,7 @@ class propos(DirectObject):
     collider = None
     nodePath = None
 
-    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1)):
+    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1), cname = "cnode"):
         super().__init__()
         self.position = pos# Set position of class
         self.base = base # To get Base
@@ -52,7 +52,8 @@ class propos(DirectObject):
         if (isinstance(self.avatar,Actor)):#If there is collision geometry
             self.avatar.reparentTo(base.render) # Set avatar tied to game
             self.avatar = props_dicts.models[modelN][0]
-            self.nodePath = self.avatar.attachNewNode(CollisionNode("cnode"))#New collision Node
+            
+            self.nodePath = self.avatar.attachNewNode(CollisionNode(cname))#New collision Node
             self.collider = props_dicts.models[modelN][1] # create colision sphere
             self.nodePath.node().addSolid(self.collider) # Adding collider to avatar
             

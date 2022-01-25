@@ -1,6 +1,7 @@
 from math import pi, sin, cos
 from turtle import speed
 from direct.showbase.Messenger import Messenger
+from panda3d.core import CollisionCapsule, CollisionNode, BitMask32
 from props import propos
 from panda3d.core import Point3
 import sys
@@ -13,7 +14,7 @@ class toon(propos):
     subclasses
     '''
     def __init__(self, base, pos, Hpr):
-        super().__init__(base, 3, pos, Hpr, 1)
+        super().__init__(base, 3, pos, Hpr, 1, cname="ToonColider")
     
     
 
@@ -50,6 +51,14 @@ class controllerToon(toon):
     speed_tug = 5
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
+        self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,-10,3,0.5)
+        self.linenode = self.avatar.attachNewNode(CollisionNode("TapeCollider"))
+        #self.linenode.node().set_into_collide_mask(1)
+        self.linenode.node().setFromCollideMask(BitMask32.bit(0))
+        self.linenode.node().setIntoCollideMask(BitMask32.allOff())
+        self.linenode.node().addSolid(self.linecolider)
+        self.linenode.show()
+        
         self.avatar.setPlayRate(2, "walk")
         #Creating keyboard events for the ShowBase for movement
         base.accept("escape",sys.exit)
@@ -155,7 +164,7 @@ class controllerToon(toon):
                 if (self.tug_prev != 0.1):
                     self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
                     self.tug_prev = 0.1
-            newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)+self.tug_offsetY) + 1,0)
+            newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)*self.tug_offsetY) + 1,0)
             self.setPos(newpos)
             
 

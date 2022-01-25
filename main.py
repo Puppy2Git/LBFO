@@ -2,7 +2,7 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.actor.Actor import Actor
-from panda3d.core import CollisionTraverser, CollisionHandlerPusher
+from panda3d.core import CollisionTraverser, CollisionHandlerPusher, CollisionHandlerEvent
 from panda3d.core import Point3
 from panda3d.core import NodePath
 from math import pi
@@ -21,6 +21,8 @@ class AppGame(ShowBase):
         self.gameworld.initWorld()#Initalizes the gameworld
         self.cTrav = CollisionTraverser()#Added the Collision Traverser
         self.pusherh = CollisionHandlerPusher()#Adds a Collision Hanlder for Pushing
+        self.eventh = CollisionHandlerEvent()
+        self.eventh.addInPattern('%fn')
         self.pusherh.setHorizontal(True)
 
         #Camera will be weird otherwise without disabling mouse
@@ -29,6 +31,9 @@ class AppGame(ShowBase):
 
         #Note: may need to add back: ,self.drive.node()
         self.cTrav.addCollider(self.gameworld.mainchar.nodePath, self.pusherh)#Adds Collider NotePath and Collision Handler to traverser
+        self.cTrav.addCollider(self.gameworld.mainchar.linenode, self.eventh)
+        #print(self.gameworld.bookshelf1.collider.ls())
+        self.cTrav.addCollider(self.gameworld.stack.nodePath, self.eventh)
         self.pusherh.addCollider(self.gameworld.mainchar.nodePath, self.gameworld.mainchar.avatar)#Adds NodePath, Avatar, and base note of the collider
         
         
