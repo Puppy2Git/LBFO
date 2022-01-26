@@ -1,12 +1,10 @@
 import imp
 from direct.showbase.DirectObject import DirectObject
 import ohmyears
-from obstacles import stack
-from props import propos
+import obstacles
 from ohmyears import soundManager
-from props import getdir
-from toons import state
-from toons import controllerToon
+import props
+import toons
 from panda3d.core import Point3
 from math import pi
 
@@ -23,6 +21,7 @@ class gameWorld(DirectObject):
         self.accept('TapeCollider-into-StackColider', self.stackColide, [True])
         self.accept('TapeCollider-exit-StackColider', self.stackColide, [False])
         self.accept('Interacting',self.interacting)
+        self.accept("Full Stack", self.stackchecker)
         self.debug = debug
 
     def stackColide(self, state, entry):
@@ -33,8 +32,22 @@ class gameWorld(DirectObject):
         >>> self.accept('TapeCollider-into-StackColider', self.stackColide, [True])\n
         Starts collision and sets it target stack
         '''
-        self.focus_stack = entry.getIntoNodePath()
+        
+        if (state):
+            for obj in obstacles.stacks:
+                if obj.nodePath == entry.getIntoNodePath():
+                    self.focus_stack = obj
         self.stackColiding = state
+
+    def stackchecker(self):
+        '''
+        Called when a stack has reached the highest pull ammount by the player\n
+        This then destroys the stack and stops the tugging of the character\n
+        the end\n
+        '''
+        self.interacting()
+        self.focus_stack.destroy()
+        self.focus_stack = None
 
     
     def initWorld(self):
@@ -44,22 +57,37 @@ class gameWorld(DirectObject):
         >>> my_game.initWorld()
         '''
         #Character
-        self.mainchar = controllerToon(self.base, Point3(0,0,0),getdir('S'))
-        self.movementstate = state(lambda : self.mainchar.canMove(move = 1),lambda : self.mainchar.canMove(move = 0))
-        self.tuggingstate = state(lambda : self.mainchar.canTug(tug = 2, looking = self.focus_stack), lambda : self.mainchar.canTug(tug = 0, looking = self.focus_stack))
+        self.mainchar = toons.controllerToon(self.base, Point3(0,0,0),props.getdir('S'))
+        self.movementstate = toons.state(lambda : self.mainchar.canMove(move = 1),lambda : self.mainchar.canMove(move = 0))
+        self.tuggingstate = toons.state(lambda : self.mainchar.canTug(tug = 2, looking = self.focus_stack.nodePath), lambda : self.mainchar.canTug(tug = 0, looking = self.focus_stack))
         self.movementstate.start()
         #Props
-        self.bookshelf1 = propos(self.base,2,Point3(-20,10,0),getdir('S'),2)
-        self.bookshelf2 = propos(self.base,2,Point3(10,10,0),getdir('S'),2)
+        self.addprops()
         #Stacks
-        self.stack = stack(base = self.base, pos = Point3(0,30,0))
+        self.genstacks()
+        
         
         if (self.debug):
             self.mainchar.debug_showcolision()
-            self.bookshelf1.debug_showcolision()
-            self.bookshelf2.debug_showcolision()
-            self.stack.debug_showcolision()
-            
+            props.debug_showcolision()
+            obstacles.debug_showcolision()
+    
+    def addprops(self):
+        '''
+        Adds props given by the props list
+        '''
+        for location in props.proplocations:
+            props.propos(self.base,location[0],location[1],location[2],location[3])
+        
+
+
+    def genstacks(self):
+        '''
+        Generate stacks given the locations specified in the list
+        '''
+        for location in obstacles.stacklocations:
+            obstacles.stacks.append(obstacles.stack(base = self.base, pos = location))
+    
 
     def interacting(self):
         '''

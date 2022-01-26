@@ -5,6 +5,8 @@ from panda3d.core import CollisionCapsule, CollisionNode, BitMask32, Point3
 from props import propos
 
 import sys
+toons = []
+
 class toon(propos):
     '''
     This class in a subclass of the propos class\n
@@ -14,7 +16,10 @@ class toon(propos):
     subclasses
     '''
     def __init__(self, base, pos, Hpr):
-        super().__init__(base, 3, pos, Hpr, 1, cname="ToonColider")
+        global toons
+        super().__init__(base, 3, pos, Hpr, 1, cname="ToonColider", isactor=True, issuper=True)
+        self.toonID = len(toons)
+        toons.append(self)
     
     
 
@@ -52,7 +57,7 @@ class controllerToon(toon):
     speed_tug = 5
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
-        self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,10,3,0.5)
+        self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,5,3,0.5)
         self.linenode = self.avatar.attachNewNode(CollisionNode("TapeCollider"))
         #self.linenode.node().set_into_collide_mask(1)
         self.linenode.node().setFromCollideMask(BitMask32.bit(0))
@@ -110,7 +115,8 @@ class controllerToon(toon):
         '''
         self.stack_to_look_at = looking
         if (tug == 2):
-            self.tug_orgin = self.stack_to_look_at.getParent().getPos() + Point3(0,-6,0)
+            self.tug_orgin = self.stack_to_look_at.getParent().getPos()#Sets the position
+            self.tug_offsetY = 3 #Distance of radius of stack
         else:
             self.tug_offsetX = pi/2
             self.tug_offsetY = 0
@@ -153,13 +159,13 @@ class controllerToon(toon):
             #t = elaped time 
             #Then for tugging location just use Actor1.lookAt(Actor2)
             if self.movement_dict["left"]:#Left
-                if (self.tug_offsetX > 0):
+                if (self.tug_offsetX > 0):#If it is not too far to the left
                     self.tug_offsetX = self.tug_offsetX - 0.1  * 25 * dt
                 if (self.tug_prev != -0.1):
                     self.tug_offsetY = self.tug_offsetY + 1  * 5 * dt
                     self.tug_prev = -0.1
             elif self.movement_dict["right"]:#Right
-                if (self.tug_offsetX < pi):
+                if (self.tug_offsetX < pi):#If it is not too far to the right
                     self.tug_offsetX = self.tug_offsetX + 0.1  * 25 * dt
                 if (self.tug_prev != 0.1):
                     self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
@@ -170,6 +176,8 @@ class controllerToon(toon):
             self.setPos(newpos)
             #New stack
             self.avatar.lookAt(self.stack_to_look_at)
+            if (self.tug_offsetY > 10):
+                messenger.send("Full Stack")
             
     def walk(self, bol):
         '''

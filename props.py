@@ -6,13 +6,14 @@ import panda3d
 from math import pi
 from panda3d.core import CollisionSphere, CollisionNode, CollisionCapsule, BitMask32, Point3
 
+
 class props_dicts:
     #Model location, model animation locations,collision offset, collision radius
-    models = [ [ Actor("models/panda",{"walk":"models/panda-walk"}) , CollisionSphere(0,0,3,3)] ,#Default Actor
-    [Actor("models/panda",{"walk":"models/panda-walk"}),CollisionCapsule(-1,0,1, 1,0,1, 1)],#Full Wall
+    models = [[["models/panda",{"walk":"models/panda-walk"}], CollisionSphere(0,0,3,3)] ,#Default Actor
+    [["models/panda",{"walk":"models/panda-walk"}],CollisionCapsule(-1,0,1, 1,0,1, 1)],#Full Wall
     ["models/LB_bookshelf","**/collision"],#Bookshelf
-    [Actor("models/toon"), CollisionSphere(0,0,3,3)],
-    ["models/level"]#Toon Model
+    [["models/toon", None], CollisionSphere(0,0,3,3)],
+    ["models/level", None]#Toon Model
     ]
 
     directions = {
@@ -24,6 +25,13 @@ class props_dicts:
 
 def getdir(di):
         return Point3(props_dicts.directions[di],0,0)
+
+props = []
+
+proplocations = [[2,Point3(10,10,0),getdir('S'),1],
+[2,Point3(-20,10,0),getdir('S'),1]
+]
+
 
 class propos(DirectObject):
     '''
@@ -39,17 +47,17 @@ class propos(DirectObject):
     collider = None
     nodePath = None
 
-    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1), cname = "cnode"):
+    def __init__(self, base, modelN = 0, pos = Point3(0,0,0), hpr = Point3(0,0,0), scale = Point3(1,1,1), cname = "cnode", isactor = False, issuper = False):
+        global props
         super().__init__()#Inits as a direct object
         self.position = pos# Set position of class
         self.base = base # To get Base
-        self.avatar = props_dicts.models[modelN][0]#The model from the model Number
+        #self.avatar = props_dicts.models[modelN][0]#The model from the model Number
         
         
-        if (isinstance(self.avatar,Actor)):#If it is an actor
+        if (isactor):#If it is an actor
+            self.avatar = Actor(props_dicts.models[modelN][0][0],props_dicts.models[modelN][0][1])
             self.avatar.reparentTo(base.render) # Set avatar tied to game
-            self.avatar = props_dicts.models[modelN][0]# sets the model
-            
             self.nodePath = self.avatar.attachNewNode(CollisionNode(cname))#New collision Node
             self.collider = props_dicts.models[modelN][1] # create colision sphere
             self.nodePath.node().addSolid(self.collider) # Adding collider to avatar
@@ -58,13 +66,25 @@ class propos(DirectObject):
             self.avatar = self.base.loader.loadModel(props_dicts.models[modelN][0])#Set the model
             self.avatar.reparentTo(base.render) # Set avatar tied to game
             if (len(props_dicts.models[modelN]) == 2):#Model collision
-                self.collider = self.avatar.find(props_dicts.models[modelN][1])#Collider
-                self.collider.node().setIntoCollideMask(BitMask32.bit(0))#Bitmask to collide with all
+                if(props_dicts.models[modelN][1] is not None):
+                    self.collider = self.avatar.find(props_dicts.models[modelN][1])#Collider
+                    self.collider.node().setIntoCollideMask(BitMask32.bit(0))#Bitmask to collide with all
         self.avatar.setPos(pos)#Setting the position of the Actor
         self.avatar.setHpr(hpr)#Set rotation
         self.avatar.setScale(scale)#Set scale
-        
-    
+        if (not issuper):
+            self.modelID = len(props)
+            props.append(self)
+    def destroy(self):
+        '''
+        Called when the actor is time to go bye bye\n
+        >>> my_prop.destroy()\n
+        that's it
+        '''
+
+        self.avatar.delete()
+
+
     def debug_showcolision(self):
         '''
         This is primarly used for debug, wether it is to print information and show collision\n
@@ -113,3 +133,9 @@ class propos(DirectObject):
         returns the action position as a Point3
         '''
         return self.avatar.getHpr()
+
+
+def debug_showcolision():
+    global props
+    for poo in props:
+        poo.debug_showcolision()
