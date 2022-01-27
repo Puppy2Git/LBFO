@@ -20,7 +20,6 @@ class stack(props.propos):
         pass
 
     def destroy(self):
-        print("Dead")
         global stacks
         stacks.remove(self)
         super().destroy()

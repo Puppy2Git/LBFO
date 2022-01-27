@@ -1,4 +1,4 @@
-import imp
+
 from direct.showbase.DirectObject import DirectObject
 import ohmyears
 import obstacles
@@ -37,6 +37,8 @@ class gameWorld(DirectObject):
             for obj in obstacles.stacks:
                 if obj.nodePath == entry.getIntoNodePath():
                     self.focus_stack = obj
+                    if (self.debug):
+                        print(obj.StackID)
         self.stackColiding = state
 
     def stackchecker(self):
