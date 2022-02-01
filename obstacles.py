@@ -1,9 +1,13 @@
 from glob import glob
 import props
 from panda3d.core import Point3
-stacks = []
+stacks = []#Stacks in play
+#Stacks to be loaded in
 stacklocations = [Point3(0,30,0),
-Point3(0,-20,0)]
+Point3(0,-20,0),
+Point3(20,0,0),
+Point3(-20,0,0)
+]
 def debug_showcolision():
     global stacks
     for obj in stacks:

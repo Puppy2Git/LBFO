@@ -44,7 +44,7 @@ class AppGame(ShowBase):
         self.taskMgr.add(self.gameworld.toon_updateloop, "movement_update")#So the toons update
         self.taskMgr.add(self.followObject, "camera_update")#So the camera can update
         self.taskMgr.add(self.gameworld.sound.update_musicshift, "music_update")#So that the music can change
-
+        self.taskMgr.add(self.gameworld.tugging_updateloop, "tug_update")
     def followObject(self, task):
         '''
         This is used to follow the main character\n

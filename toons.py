@@ -153,31 +153,32 @@ class controllerToon(toon):
 
         elif self.movestate == 2:#Handles tugging stuff
             #Funcitons of movement
-            #Degree of Left and Right X = cos(f)
-            #Degree of Tugging Back Y = -(sin(f) + t) + 1
+            #Degree of Left and Right X = cos(f)*length
+            #Degree of Tugging Back Y = -(sin(f) + t)*length
             #f = tugging ammount left (-) and right (+), 0 <= x <= pi
             #t = elaped time 
             #Then for tugging location just use Actor1.lookAt(Actor2)
-            if self.movement_dict["left"]:#Left
+            if (self.movement_dict["left"] and not self.movement_dict["right"]):#Left
                 if (self.tug_offsetX > 0):#If it is not too far to the left
                     self.tug_offsetX = self.tug_offsetX - 0.1  * 25 * dt
                 if (self.tug_prev != -0.1):
-                    self.tug_offsetY = self.tug_offsetY + 1  * 5 * dt
+                    #self.tug_offsetY = self.tug_offsetY + 1  * 5 * dt
                     self.tug_prev = -0.1
-            elif self.movement_dict["right"]:#Right
+                    messenger.send("Heave hoe")
+            elif (self.movement_dict["right"] and not self.movement_dict["left"]):#Right
                 if (self.tug_offsetX < pi):#If it is not too far to the right
                     self.tug_offsetX = self.tug_offsetX + 0.1  * 25 * dt
                 if (self.tug_prev != 0.1):
-                    self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
+                    #self.tug_offsetY = self.tug_offsetY + 1  * 15 * dt
                     self.tug_prev = 0.1
+                    messenger.send("Heave hoe")
             #New Pos
             newpos = self.tug_orgin + Point3(-cos(self.tug_offsetX)*self.tug_offsetY,-(sin(self.tug_offsetX)*self.tug_offsetY),0)
             #move
             self.setPos(newpos)
             #New stack
             self.avatar.lookAt(self.stack_to_look_at)
-            if (self.tug_offsetY > 10):
-                messenger.send("Full Stack")
+            
             
     def walk(self, bol):
         '''

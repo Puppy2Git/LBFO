@@ -5,6 +5,7 @@ import obstacles
 from ohmyears import soundManager
 import props
 import toons
+from Iseetrees import GuiManager
 from panda3d.core import Point3
 from math import pi
 
@@ -14,15 +15,34 @@ class gameWorld(DirectObject):
     debug = False
     stackColiding = False
     focus_stack = None
+    TUGDECAY = 0.5
+    TUGPULL = 100
     def __init__(self, base, debug):
         self.base = base
         super().__init__()
         self.sound = soundManager(self.base)
+        self.guiman = GuiManager()
         self.accept('TapeCollider-into-StackColider', self.stackColide, [True])
         self.accept('TapeCollider-exit-StackColider', self.stackColide, [False])
         self.accept('Interacting',self.interacting)
-        self.accept("Full Stack", self.stackchecker)
+        self.accept("Heave hoe", self.tughandle)
         self.debug = debug
+
+    def tughandle(self):
+        '''
+        This is called every time the player does a sucessful tug action\n
+        >>> self.accept('Heave hoe', self.tughandle)\n
+        It updates the player position as well as adding to the Progress Box
+        '''
+        #print(self.focus_stack)
+        #Update character position
+        if (self.mainchar.tug_offsetY < 10):
+            self.mainchar.tug_offsetY = self.mainchar.tug_offsetY + 1 * 15 * globalClock.getDt()
+        #Update Bar ammount
+        self.guiman.setProgressBoxAmount(self.guiman.getProgressBoxAmount() + globalClock.getDt() * self.TUGPULL)
+
+        
+        
 
     def stackColide(self, state, entry):
         '''
@@ -33,12 +53,13 @@ class gameWorld(DirectObject):
         Starts collision and sets it target stack
         '''
         
-        if (state):
+        if (state and not self.tugging):
             for obj in obstacles.stacks:
                 if obj.nodePath == entry.getIntoNodePath():
                     self.focus_stack = obj
                     if (self.debug):
                         print(obj.StackID)
+        
         self.stackColiding = state
 
     def stackchecker(self):
@@ -48,6 +69,7 @@ class gameWorld(DirectObject):
         the end\n
         '''
         self.interacting()
+        #print(self.focus_stack)
         self.focus_stack.destroy()
         self.focus_stack = None
 
@@ -59,6 +81,7 @@ class gameWorld(DirectObject):
         >>> my_game.initWorld()
         '''
         #Character
+        
         self.mainchar = toons.controllerToon(self.base, Point3(0,0,0),props.getdir('S'))
         self.movementstate = toons.state(lambda : self.mainchar.canMove(move = 1),lambda : self.mainchar.canMove(move = 0))
         self.tuggingstate = toons.state(lambda : self.mainchar.canTug(tug = 2, looking = self.focus_stack.nodePath), lambda : self.mainchar.canTug(tug = 0, looking = self.focus_stack))
@@ -67,7 +90,10 @@ class gameWorld(DirectObject):
         self.addprops()
         #Stacks
         self.genstacks()
+        #Gui
         
+        #self.guiman.showProgressBox(True)
+        self.guiman.setProgressBoxAmount(0)
         
         if (self.debug):
             self.mainchar.debug_showcolision()
@@ -99,15 +125,30 @@ class gameWorld(DirectObject):
         '''
         self.tugging = not self.tugging
         if (self.tugging and self.stackColiding):
+            self.guiman.showProgressBox(True)
             self.movementstate.end()
             self.tuggingstate.start()
             self.sound.ToggleMusic(True)
         else:
+            self.guiman.showProgressBox(False)
             self.tugging = False
             self.tuggingstate.end()
             self.movementstate.start()
             self.sound.ToggleMusic(False)
             
+    def tugging_updateloop(self, task):
+        '''
+        Tugging update loop is responsible for updating the box and handling tugging a stack down.\n
+        update loop should be called in main.py
+        '''
+        if (self.tugging):#Decreasing Tug
+            self.guiman.setProgressBoxAmount(self.guiman.getProgressBoxAmount() - globalClock.getDt() * self.TUGDECAY)
+            if (self.guiman.getProgressBoxAmount() < 0):#Check if tug is less
+                self.guiman.setProgressBoxAmount(0)
+            elif (self.guiman.getProgressBoxAmount() >= 100):
+                self.guiman.setProgressBoxAmount(0)
+                self.stackchecker()
+        return task.cont
 
     def toon_updateloop(self, task):
         '''
