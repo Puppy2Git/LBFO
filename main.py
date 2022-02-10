@@ -4,7 +4,7 @@ from direct.task import Task
 from direct.actor.Actor import Actor
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher, CollisionHandlerEvent
 from panda3d.core import Point3
-
+from panda3d.core import WindowProperties
 
 #Debug stuff
 #from panda3d.core import loadPrcFileData
@@ -26,7 +26,11 @@ class AppGame(ShowBase):
         self.eventh.addInPattern('%fn-into-%in')#Adds an in pattern
         self.eventh.addOutPattern('%fn-exit-%in')#Adds an out pattern
         self.pusherh.setHorizontal(True)#Disables pushing on the Y-axis
+        winprop = WindowProperties()
 
+        #Setting Window Title
+        winprop.setTitle("My Window")
+        self.win.requestProperties(winprop)
         #Camera will be weird otherwise without disabling mouse
         self.disable_mouse()
         self.camera.setHpr(0,275,0)

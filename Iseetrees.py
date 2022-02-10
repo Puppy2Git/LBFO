@@ -8,7 +8,7 @@ class GuiManager():
     def __init__(self):
         self.bar = DirectWaitBar(text="0", value=0, pos=(0, .4, -0.9), hpr=(0,0,0), scale = (.5,1,1))
         self.bar.hide()
-
+    
     def showProgressBox(self, state):
         '''
         Either shows or hides the progress bar given the value\n

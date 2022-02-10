@@ -39,7 +39,7 @@ class gameWorld(DirectObject):
         if (self.mainchar.tug_offsetY < 10):
             self.mainchar.tug_offsetY = self.mainchar.tug_offsetY + 1 * 15 * globalClock.getDt()
         #Update Bar ammount
-        self.guiman.setProgressBoxAmount(self.guiman.getProgressBoxAmount() + globalClock.getDt() * self.TUGPULL)
+        self.guiman.setProgressBoxAmount(self.guiman.getProgressBoxAmount() + globalClock.getDt() * self.focus_stack.resistance)
 
         
         
@@ -70,7 +70,7 @@ class gameWorld(DirectObject):
         '''
         self.interacting()
         #print(self.focus_stack)
-        self.focus_stack.destroy()
+        self.focus_stack.topple()
         self.focus_stack = None
 
     
@@ -113,8 +113,8 @@ class gameWorld(DirectObject):
         '''
         Generate stacks given the locations specified in the list
         '''
-        for location in obstacles.stacklocations:
-            obstacles.stacks.append(obstacles.stack(base = self.base, pos = location))
+        for location, dif in obstacles.stacklocations:
+            obstacles.stacks.append(obstacles.stack(base = self.base, pos = location, dificulty= dif))
     
 
     def interacting(self):
@@ -131,6 +131,7 @@ class gameWorld(DirectObject):
             self.sound.ToggleMusic(True)
         else:
             self.guiman.showProgressBox(False)
+            self.guiman.setProgressBoxAmount(0)
             self.tugging = False
             self.tuggingstate.end()
             self.movementstate.start()
