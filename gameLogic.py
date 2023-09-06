@@ -28,6 +28,7 @@ class gameWorld(DirectObject):
         self.accept("Heave hoe", self.tughandle)
         self.debug = debug
 
+    #To be obsolete
     def tughandle(self):
         '''
         This is called every time the player does a sucessful tug action\n
@@ -116,7 +117,7 @@ class gameWorld(DirectObject):
         for location, dif in obstacles.stacklocations:
             obstacles.stacks.append(obstacles.stack(base = self.base, pos = location, dificulty= dif))
     
-
+    #Need to change
     def interacting(self):
         '''
         Should be called from the Interacting event\n
@@ -136,7 +137,7 @@ class gameWorld(DirectObject):
             self.tuggingstate.end()
             self.movementstate.start()
             self.sound.ToggleMusic(False)
-            
+    #Obsolete        
     def tugging_updateloop(self, task):
         '''
         Tugging update loop is responsible for updating the box and handling tugging a stack down.\n
@@ -151,6 +152,7 @@ class gameWorld(DirectObject):
                 self.stackchecker()
         return task.cont
 
+    #Obsolete
     def toon_updateloop(self, task):
         '''
         This is the main toon update loop\n

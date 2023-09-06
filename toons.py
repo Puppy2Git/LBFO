@@ -58,7 +58,7 @@ class controllerToon(toon):
     def __init__(self, base, pos, Hpr):
         super().__init__(base, pos, Hpr)
         self.linecolider = CollisionCapsule(pos.getX(),pos.getY(),pos.getZ(),0,5,3,0.5)
-        self.linenode = self.avatar.attachNewNode(CollisionNode("TapeCollider"))
+        self.linenode = self.avatar.attachNewNode(CollisionNode("FanCollider"))
         #self.linenode.node().set_into_collide_mask(1)
         self.linenode.node().setFromCollideMask(BitMask32.bit(0))
         self.linenode.node().setIntoCollideMask(BitMask32.allOff())
@@ -106,6 +106,7 @@ class controllerToon(toon):
         '''
         self.movestate = move
     
+    #To be obsolete
     def canTug(self, tug, looking):
         '''
         Sets the state of if it can Tug\n
@@ -151,6 +152,7 @@ class controllerToon(toon):
                 self.avatar.lookAt(newpos)
             self.setPos(newpos)        
 
+        #Do be obsolete
         elif self.movestate == 2:#Handles tugging stuff
             #Funcitons of movement
             #Degree of Left and Right X = cos(f)*length
